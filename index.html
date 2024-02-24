@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>To DO List</title>
+    <script src="main.js"></script>
+</head>
+<body>
+    <div class="parent">
+        <div class="nav">
+            <a href="#home">To Do List</a>
+        </div>
+        <div id="home" class="task">
+            <input type="text" class="input">
+            <input type="submit" class="btne" value="Add Task">
+        </div>
+        <div  class="addTask"></div>
+    </div>
+    <span id="up">up</span>
+    
+    <script>
+        // btn start 
+        let elementUp = document.querySelector("#up");
+        window.onscroll = function (){
+           if(window.scrollY >= 200){
+            elementUp.style.display = "block";
+           }else{
+            elementUp.style.display = "none";
+           }
+        }
+        elementUp.onclick = function(){
+            window.scrollTo({
+                left:0,
+                top:0,
+                behavior:"smooth",
+            });
+        }
+        // btn end 
+        //task start
+        let input = document.querySelector(".input");
+        let submit = document.querySelector(".btne");
+        let addTaskDiv = document.querySelector(".addTask");
+
+        let ArrayOfTask = [];
+
+        if(localStorage.getItem("task")){
+          ArrayOfTask = JSON.parse(localStorage.getItem("task"));
+        };
+
+getLocaleStorge ();
+
+        submit.onclick = function(){
+            if(input.value !== ""){
+                addArrayInput(input.value);
+                input.value = ""
+            }
+        }
+
+        function addArrayInput (taske){
+            //data task
+            const dataTask = {
+                id: Date.now(),
+                title:taske,
+                Situation:false,
+            };
+            ArrayOfTask.push(dataTask);
+            addElementPage(ArrayOfTask);
+            addLocaleStorge(ArrayOfTask);
+        }
+        
+        addTaskDiv.addEventListener("click", (e) =>{
+    if (e.target.classList.contains("btn")){
+        delateTaskWith(e.target.parentElement.getAttribute("data-id"))
+        e.target.parentElement.remove()
+    }
+    if(e.target.classList.contains("addTask")){
+        e.target.classList.toggle("done");
+    }
+})
+        function addElementPage (task){
+            addTaskDiv.innerHTML = "";
+            //add element div
+            ArrayOfTask.forEach((dataTask) =>{
+                let Div = document.createElement("div");
+            Div.className = "addTask";
+            if (dataTask.Situation === true){
+            div.className = 'addTask done';
+        }
+            Div.setAttribute("data-id",dataTask.id);
+            Div.appendChild(document.createTextNode(dataTask.title));
+            //add element span
+            let spanDel = document.createElement("span");
+            spanDel.appendChild(document.createTextNode("delate"));
+            spanDel.className = "btn";
+            Div.appendChild(spanDel);
+            addTaskDiv.appendChild(Div);
+            });
+        }
+        //localeStorge
+        function addLocaleStorge (ArrayOfTask){
+            window.localStorage.setItem("task", JSON.stringify(ArrayOfTask));
+        }
+        function getLocaleStorge (){
+            let Date = window.localStorage.getItem("task");
+            if(Date){
+                let task = JSON.parse(Date);
+                addElementPage(task);
+            }
+        }
+
+        function delateTaskWith (tasked){
+    ArrayOfTask = ArrayOfTask.filter((dataTask) => dataTask.id != tasked);
+    addLocaleStorge(ArrayOfTask)
+}
+
+
+
+        //task end
+
+    </script>
+</body>
+</html>
